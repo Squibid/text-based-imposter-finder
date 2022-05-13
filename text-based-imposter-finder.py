@@ -1,5 +1,5 @@
 from asyncio import tasks
-import random, os, time, pygame
+import random, os, time, pygame, sys
 pygame.init()
 pygame.mixer.init()
 
@@ -24,51 +24,46 @@ def room_spawn(room_spawn):
     return p_room
 
 def AI_moving(p_roome):
-    while True:
+    if random.randint(1, 2) != 1:
         if p_roome == 0:
             p_roome = 1
-            break
         elif p_roome == 1:
             buckets = random.randint(0, 3)
             if buckets == 0:
                 p_roome = 0
-                break
             elif buckets == 1:
                 p_roome = 2
-                break
             elif buckets == 2:
                 p_roome = 3
-                break
             elif buckets == 4:
                 p_roome = 4
-                break
         elif p_roome == 2:
             buckets = random.randint(0, 2)
             if buckets == 0:
                 p_roome = 1
-                break
             elif buckets == 1:
                 p_roome = 5
-                break
             elif buckets == 2:
                 p_roome = 6
-                break
         elif p_roome == 3 or p_roome == 4:
             p_roome = 1
-            break
         elif p_roome == 5 or p_roome == 6:
             p_roome = 2
-            break
     return p_roome
+task1Complete = False
+task2Complete = False
+task3Complete = False
+task4Complete = False
+task5Complete = False
 
 def task1(): #task 1 in Meeting Room
     clear()
     HUD()
     print("Task: Refill the water cooler\n")
-    task1Complete = False
     if task1Complete == True:
         print("Task Already Complete")
-    while task1Complete == False:
+        time.sleep(2)
+    while task1Complete != True:
         task1p1 = input("unscrew bottle ")
         if task1p1 == 'unscrew':
             task1p2 = input("flip bottle ")
@@ -115,7 +110,7 @@ def task5(): #task 5 Lamp Making Room
         print("Task Already Complete")
 
 max_players = 5
-rooms = ["Meeting Room", "Hallway_1", "Hallway_2", "Gift Card Center", "Room Of Stuff", "Mart", "Lamp Making Room"]
+rooms = ["Meeting Room", "Hallway 1", "Hallway 2", "Gift Card Center", "Room Of Stuff", "Mart", "Lamp Making Room"]
 tasks = ["Water Cooler", "John Wick", "3", "4", "5",]
 SUS_nums = []
 alive_players = max_players
@@ -148,13 +143,34 @@ while player5 in SUS_nums:
 SUS_nums.append(player5)
 sus = random.randint(1, max_players)
 
+NPC_movent = False
+debug_map = False
+start = False
+while start == False:
+    clear()
+    print("Welcome to text based imposter finder!")
+    print("(1) start game")
+    print("(2) settings")
+    menu_input = int(input("Enter a number for what action you want to do: "))
+    if menu_input == 1:
+        start = True
+    if menu_input == 2:
+        clear()
+        print("(1) Enable debug map")
+        print("(2) Enable NPC movement data")
+        menu_input = int(input("Enter a number for what action you want to do: "))
+        if menu_input == 1:
+            debug_map = True
+        if menu_input == 2:
+            NPC_movent = True
+
 # check if you are imposter
 clear()
 if player1 == sus:
-    print(Color.RED + "you are imposter" + Color.END)
+    print(Color.RED + "You are the imposter" + Color.END)
     p_sus = 1
 else:
-    print(Color.BLUE + "You are crewmate" + Color.END)
+    print(Color.BLUE + "You are a crewmate" + Color.END)
     
 rp1t1 = random.randint(0, 4)
 rp1t2 = random.randint(0, 4)
@@ -164,14 +180,35 @@ if rp1t1 == rp1t2:
         rp1t2 = 0
 
 def HUD():
+    if debug_map == True:
+        print(" _______ ")
+        print("|   0   |")
+        print("|__| |__|")
+        print("|3  1  4|")
+        print("|__| |__|")
+        print("|5  2  6|")
+        print("|__|_|__|")
     if p_sus == 1:
-        print(Color.BOLD + "Current Room:" + Color.END, rooms[p1_room])
-        print(Color.BOLD + Color.RED + "Fake Task #1: " + Color.END + Color.RED + tasks[rp1t1] + Color.END)
-        print(Color.BOLD + Color.RED + "Fake Task #2: " + Color.END + Color.RED +  tasks[rp1t2] +Color.END, '\n')
+        print(Color.BOLD + "Role:" + Color.END + Color.RED, "Imposter" + Color.END)
     else:
-        print(Color.BOLD + "Current Room: " + Color.END + rooms[p1_room])
-        print(Color.BOLD + "Task #1: " + Color.END + tasks[rp1t1])
-        print(Color.BOLD + "Task #2: " + Color.END + tasks[rp1t2], '\n')
+        print(Color.BOLD + "Role:" + Color.END + Color.BLUE, "Crewmate" + Color.END)
+    print(Color.BOLD + "Current Room: " + Color.END + rooms[p1_room])
+    if p1_room == p2_room or p1_room == p3_room or p1_room == p4_room or p1_room == p5_room:
+        sys.stdout.write(Color.BOLD + "In room: " + Color.END)
+    if p1_room != p2_room and p1_room != p3_room and p1_room != p4_room and p1_room != p5_room:
+        print(Color.BOLD + "In room: " + Color.END)
+    if p1_room == p2_room:
+        sys.stdout.write("ඞ2 ")
+    if p1_room == p3_room:
+        sys.stdout.write("ඞ3 ")
+    if p1_room == p4_room:
+        sys.stdout.write("ඞ4 ")
+    if p1_room == p5_room:
+        sys.stdout.write("ඞ5")
+    if p1_room == p2_room or p1_room == p3_room or p1_room == p4_room or p1_room == p5_room:
+        sys.stdout.write('\n')
+    print(Color.BOLD + "Task #1: " + Color.END + tasks[rp1t1])
+    print(Color.BOLD + "Task #2: " + Color.END + tasks[rp1t2], '\n') 
 
 susMusic = pygame.mixer.Sound('sus.wav')
 susMusic.play()
@@ -204,7 +241,7 @@ while True:
             print("(1) Move into Hallway 1 ")
         if rp1t1 == 0 or rp1t2 == 0:
             print("(2)", tasks[0], "task")
-        move_input = (int(input("Enter a number for what action you want to do: ")))
+        move_input = int(input("Enter a number for what action you want to do: "))
         if move_input == 1:
             p1_room = 1
             AI_boz = 1
@@ -214,7 +251,7 @@ while True:
     elif p1_room == 1:
         HUD()
         print("(1) Move into Hallway 2 \n(2) Move into Gift Card Center \n(3) Move into Room Of Stuff \n(4) Move into Meeting Room")
-        move_input = (int(input("Enter a number for what action you want to do: ")))
+        move_input = int(input("Enter a number for what action you want to do: "))
         if move_input == 1:
             p1_room = 2
             AI_boz = 1
@@ -230,7 +267,7 @@ while True:
     elif p1_room == 2:
         HUD()
         print("(1) Move into Hallway 1 \n(2) Move into Mart \n(3) Move into Lamp Making Room")
-        move_input = (int(input("Enter a number for what action you want to do: ")))
+        move_input = int(input("Enter a number for what action you want to do: "))
         if move_input == 1:
             p1_room = 1
             AI_boz = 1
@@ -243,40 +280,45 @@ while True:
     elif p1_room == 3:
         HUD()
         print("(1) Move into Hallway 1 ")
-        move_input = (int(input("Enter a number for what action you want to do: ")))
+        move_input = int(input("Enter a number for what action you want to do: "))
         if move_input == 1:
             p1_room = 1
             AI_boz = 1
     elif p1_room == 4:
         HUD()
         print("(1) Move into Hallway 1 ")
-        move_input = (int(input("Enter a number for what action you want to do: ")))
+        move_input = int(input("Enter a number for what action you want to do: "))
         if move_input == 1:
             p1_room = 1
             AI_boz = 1
     elif p1_room == 5:
         HUD()
         print("(1) Move into Hallway 2 ")
-        move_input = (int(input("Enter a number for what action you want to do: ")))
+        move_input = int(input("Enter a number for what action you want to do: "))
         if move_input == 1:
             p1_room = 2
             AI_boz = 1
     elif p1_room == 6:
         HUD()
         print("(1) Move into Hallway 2 ")
-        move_input = (int(input("Enter a number for what action you want to do: ")))
+        move_input = int(input("Enter a number for what action you want to do: "))
         if move_input == 1:
             p1_room = 2
             AI_boz = 1
             
     if AI_boz == 1:
-         t = AI_moving(p2_room)
-         print(t)
-         tt = AI_moving(p3_room)
-         print(tt)
-         ttt = AI_moving(p4_room)
-         print(ttt)
-         tttt = AI_moving(p5_room)
-         print(tttt)
-         AI_boz = 0
-         time.sleep(2)
+        t = AI_moving(p2_room)
+        if NPC_movent == True:
+            print("p2 room", t)
+        tt = AI_moving(p3_room)
+        if NPC_movent == True:
+            print("p3 room", tt)
+        ttt = AI_moving(p4_room)
+        if NPC_movent == True:
+            print("p4 room", ttt)
+        tttt = AI_moving(p5_room)
+        if NPC_movent == True:
+            print("p5 room", tttt)
+        AI_boz = 0
+        if NPC_movent == True:
+            time.sleep(2)
